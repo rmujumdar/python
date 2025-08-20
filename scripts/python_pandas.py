@@ -1,4 +1,4 @@
-# ------------------------------------------------------------------------
+## ------------------------------------------------------------------------
 # PYTHON - PANDAS LIBRARY
 # ------------------------------------------------------------------------
 # References:
@@ -89,6 +89,99 @@ df.tail(2) # shows last 2 rows
 # ------------------------------------------------------------------------
 # FILES - CSV, EXCEL
 # ------------------------------------------------------------------------
+# Pandas really shines when working with data in CSV and Excel files.
+
+# You can read files like CSV, Excel, parquet, feather, SQL, JSON, XML, HTML, etc
+coffees = pd.read_csv('../data/coffee_sales.csv')
+
+# Saving data to files
+coffees.to_csv('../data/coffee_sales.csv', index=False) # index=False prevents from adding a 'Unnamed:0' column
+
+# Preview Data
+coffees.head() # preview data, first 5 rows by default
+coffees.head(10) # preview first 10 rows
+coffees.tail() # preview last 5 rows by default
+coffees.sample(10) # preview a random sample, 1 row by default
+
+coffees.info() # column names, column datatypes
+coffees.columns # column names
+coffees.dtypes # column datatypes
+rows, columns = coffees.shape # returns a tuple (rows_count, columns_count)
+print(rows, columns)
+data_count = coffees.size # number of elements
+print(data_count)
+
+coffees.describe() # summary stats of numeric data
+coffees['coffees Type'].unique() # list of unique values in a column
+coffees['coffees Type'].nunique() # count of unique values in a column
+coffees['coffees Type'].unique().tolist() # easier viewing
+pd.Series(coffees['coffees Type'].unique()) # easeier viewing
+
+# Access Specific Rows, Columns, Cells
+coffees.loc[0] # access specific row by row name
+coffees.loc[0, 'coffees Type'] # access specific cells in [#rows, #columns] by name
+coffees.loc[0:5, ['coffees Type','Units Sold']] # access cells in multiple rows, columns, allows slicing
+coffees.iloc[0] # access specific row by row index
+coffees.iloc[0:10,0] # access cells in multiple rows, columns by index, allows slicing
+
+coffees['Day'] # access a column
+coffees[['coffees Type', 'Day']] # access multiple columns
+coffees.Day # access single_word columns
+
+# Editing Data
+print(coffees.loc[0,'Units Sold'])
+coffees.loc[0,'Units Sold'] = 20
+print(coffees.loc[0,'Units Sold'])
+
+# Sorting Data
+coffees.sort_values('Units Sold') # default is ascending
+coffees.sort_values('Units Sold', ascending=False)
+coffees.sort_values(['Units Sold', 'coffees Type'], ascending=[False, True]) # sort by multiple values, sorts left most parameter first
+
+# Filtering Data
+players = pd.read_csv('../data/olympics_players.csv')
+
+tall_players = players.loc[players['height_cm'] > 220]
+tall_players.sort_values('height_cm', ascending=False)
+tall_players.sort_values('height_cm', ascending=False)[['name', 'height_cm']] # shows only name and height_cm columns
+
+players.loc[players['height_cm'] > 220, ['name','height_cm']] # short hand to specify columns
+players.loc[(players['height_cm'] > 200) & (players['height_cm'] < 202) & (players['born_country'] == 'USA')].sort_values('height_cm', ascending=False)
+
+players[players['height_cm'] > 220] # short hand instead of using loc[]
+
+players[players['name'].str.contains('Keith', case=False)]
+players[players['name'].str.contains('Keith', case=False)].shape[0]
+
+players.query('born_country=="USA" & born_city=="Seattle"') # not the use of '' and ""
+
+# Add, Remove Columns
+coffees = pd.read_csv('../data/coffee_sales.csv')
+coffees.head()
+
+coffees['Price'] = 4.99 # adds a new column and sets value to 4.99
+coffees.drop(columns='Price', inplace=True)
+price_map = {
+  'Espresso':3.99,
+  'Latte':4.99
+}
+
+coffees['Price'] = coffees['Coffee Type'].map(price_map)
+coffees['Revenue'] = coffees['Units Sold'] * coffees['Price']
+coffees.rename(columns={'Units Sold':'Coffees Sold'}, inplace=True)
+
+coffees.drop(0) # removes by row index, does not modify the dataframe unless inplace=True
+coffees = coffees.drop(0) # modifies the dataframe
+coffees.drop(columns=['Unnamed: 0'], inplace=True) # modifies the dataframe
+coffees.head()
+
+players = pd.read_csv('../data/olympics_players.csv')
+players_temp = players.copy()
+players_temp.head()
+
+# Reading large excel files takes time
+olympics_data_df = pd.read_excel('../data/olympics_data.xlsx')
+olympics_data_df.head()
 
 # ------------------------------------------------------------------------
 # VISUALIZATION USING MATPLOTLIB
